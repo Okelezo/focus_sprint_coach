@@ -1,0 +1,24 @@
+.DS_Store
+
+# env
+.env
+backend/.env
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+backend/.venv/
+
+# packaging
+*.egg-info/
+dist/
+build/
+
+# tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# db
+postgres_data/

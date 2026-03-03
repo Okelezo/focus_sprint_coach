@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block body %}
+  <a href="/app">← Back</a>
+  <h1 style="margin-top:10px">Billing</h1>
+
+  {% if status %}
+    <div class="card">
+      <strong>Status:</strong> {{ status }}
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="row" style="justify-content: space-between; align-items: baseline;">
+      <div>
+        <div class="muted"><small>Current plan</small></div>
+        <div><strong>{{ plan }}</strong></div>
+      </div>
+    </div>
+    <hr />
+    <div class="row" style="justify-content: flex-end;">
+      <form method="post" action="/app/billing/upgrade">
+        <button class="primary" type="submit">Upgrade</button>
+      </form>
+      <form method="post" action="/app/billing/manage">
+        <button type="submit">Manage subscription</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

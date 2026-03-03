@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1>Focus Sprint Coach</h1>
+  <p class="muted">Log in or create an account.</p>
+
+  <div id="auth_error"></div>
+
+  <div class="card">
+    <h2>Login</h2>
+    <form method="post" action="/ui/login" hx-post="/ui/login" hx-target="#auth_error" hx-swap="innerHTML">
+      <div class="list">
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button class="primary" type="submit">Login</button>
+      </div>
+    </form>
+
+    <hr />
+
+    <h2>Register</h2>
+    <form method="post" action="/ui/register" hx-post="/ui/register" hx-target="#auth_error" hx-swap="innerHTML">
+      <div class="list">
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button class="primary" type="submit">Create account</button>
+      </div>
+    </form>
+
+    <p class="muted"><small>Tip: for local MVP use any email + password.</small></p>
+  </div>
+{% endblock %}

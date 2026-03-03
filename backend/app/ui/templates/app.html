@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="row" style="justify-content: space-between; align-items: baseline;">
+    <div>
+      <h1>Tasks</h1>
+      <div class="muted"><small>{{ user.email }}</small></div>
+    </div>
+    <div style="flex:0">
+      <form method="post" action="/ui/logout">
+        <button class="danger" type="submit">Logout</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <form method="post" action="/app/tasks" hx-post="/app/tasks" hx-target="#tasks" hx-swap="afterbegin" hx-on::after-request="this.reset(); var e=document.getElementById('empty_hint'); if(e) e.remove();">
+      <div class="row">
+        <input name="title" placeholder="New task title" required />
+        <button class="primary" type="submit" style="flex:0">Add</button>
+      </div>
+    </form>
+
+    <hr />
+
+    <div class="row">
+      <a href="/app/sprint">Go to Sprint</a>
+      <div style="flex:0">|</div>
+      <a href="/app/history">Today</a>
+    </div>
+
+    <hr />
+
+    <div id="tasks" class="list">
+      {% for task in tasks %}
+        {% include "partials/task_row.html" %}
+      {% else %}
+        <div id="empty_hint" class="muted"><small>No tasks yet.</small></div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

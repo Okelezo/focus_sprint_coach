@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+  <a href="/app">← Back</a>
+  <h1 style="margin-top:10px">Send feedback</h1>
+
+  {% if error %}
+    <div class="card" style="border-color:#fca5a5; background:#fff1f2">
+      <strong>Error:</strong> {{ error }}
+    </div>
+  {% endif %}
+
+  {% if ok %}
+    <div class="card" style="border-color:#86efac; background:#f0fdf4">
+      <strong>Thanks!</strong> Feedback sent.
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <form method="post" action="/app/feedback">
+      <label>
+        <div class="muted"><small>Message</small></div>
+        <textarea name="message" required rows="5" style="width:100%"></textarea>
+      </label>
+      <input type="hidden" name="current_page" value="{{ current_page }}" />
+      <input type="hidden" name="last_sprint_id" value="{{ last_sprint_id or '' }}" />
+      <div class="row" style="justify-content:flex-end">
+        <button class="primary" type="submit">Send</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

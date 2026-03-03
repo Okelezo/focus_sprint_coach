@@ -1,0 +1,11 @@
+<div class="card" style="padding:12px">
+  <div class="row">
+    <div>
+      <a href="/app/task/{{ task.id }}">{{ task.title }}</a>
+      <div class="muted"><small>{{ task.created_at }}</small></div>
+    </div>
+    <div style="flex:0">
+      <a href="/app/task/{{ task.id }}"><span class="badge">Open</span></a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="row" style="justify-content: space-between; align-items: baseline;">
+    <div>
+      <a href="/app">← Back</a>
+      <h1 style="margin-top:10px">Today</h1>
+      <div class="muted"><small>{{ today.date }}</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Sprints</h2>
+    <div class="list">
+      {% for s in today.sprints %}
+        <div class="card" style="padding:12px">
+          <div class="row">
+            <div>
+              <div class="badge">{{ s.status }}</div>
+              <div class="muted"><small>{{ s.started_at }}{% if s.ended_at %} → {{ s.ended_at }}{% endif %}</small></div>
+              <div><small>{{ s.duration_minutes }} min</small></div>
+            </div>
+          </div>
+          {% if s.reflection %}
+            <hr />
+            <div class="muted"><small>Reflection</small></div>
+            <div><strong>{{ s.reflection.outcome }}</strong></div>
+            {% if s.reflection.next_step %}
+              <div class="muted"><small>Next: {{ s.reflection.next_step }}</small></div>
+            {% endif %}
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="muted"><small>No sprints yet today.</small></div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

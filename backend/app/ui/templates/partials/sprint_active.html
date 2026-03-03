@@ -1,0 +1,47 @@
+<h2>Active</h2>
+<div class="muted"><small>Sprint id: {{ sprint.id }}</small></div>
+
+<div class="card" style="margin-top:12px">
+  <div class="row">
+    <div>
+      <div class="badge">Timer</div>
+      <h3 id="timer">--:--</h3>
+      <div class="muted"><small>Keep this tab open.</small></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const minutes = Number("{{ duration_minutes or sprint.duration_minutes }}");
+    const end = Date.now() + minutes * 60 * 1000;
+    const el = document.getElementById('timer');
+    function tick() {
+      const ms = Math.max(0, end - Date.now());
+      const total = Math.floor(ms / 1000);
+      const m = String(Math.floor(total / 60)).padStart(2, '0');
+      const s = String(total % 60).padStart(2, '0');
+      el.textContent = m + ':' + s;
+      if (ms > 0) requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+</script>
+
+<hr />
+
+<h3>Distraction note</h3>
+<form method="post" action="/app/sprint/{{ sprint.id }}/distraction" hx-post="/app/sprint/{{ sprint.id }}/distraction" hx-target="#notes" hx-swap="afterbegin" hx-on::after-request="this.reset()">
+  <div class="row">
+    <input name="note" placeholder="Quick note (1 sentence)" required />
+    <button type="submit" style="flex:0">Add</button>
+  </div>
+</form>
+
+<div id="notes" class="list" style="margin-top:10px"></div>
+
+<hr />
+
+<form method="post" action="/app/sprint/{{ sprint.id }}/finish" hx-post="/app/sprint/{{ sprint.id }}/finish" hx-target="#sprint_panel" hx-swap="innerHTML">
+  <button class="primary" type="submit">Finish sprint</button>
+</form>

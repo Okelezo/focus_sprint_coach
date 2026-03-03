@@ -1,0 +1,16 @@
+<h2>Reflection</h2>
+<div class="muted"><small>Sprint finished. Capture 30 seconds of reflection.</small></div>
+
+<form method="post" action="/app/sprint/{{ sprint.id }}/reflection" hx-post="/app/sprint/{{ sprint.id }}/reflection" hx-target="#sprint_panel" hx-swap="innerHTML">
+  <div class="list" style="margin-top:12px">
+    <select name="outcome" required>
+      <option value="">Select outcome</option>
+      <option value="done">Done</option>
+      <option value="blocked">Blocked</option>
+      <option value="distracted">Distracted</option>
+    </select>
+    <textarea name="reason" rows="3" placeholder="What happened? (optional)"></textarea>
+    <input name="next_step" placeholder="Next step (optional)" />
+    <button class="primary" type="submit">Save reflection</button>
+  </div>
+</form>

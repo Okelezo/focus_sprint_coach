@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="row" style="justify-content: space-between; align-items: baseline;">
+    <div>
+      <a href="/app">← Back</a>
+      <h1 style="margin-top:10px">{{ task.title }}</h1>
+    </div>
+    <div style="flex:0">
+      <a href="/app/sprint"><span class="badge">Sprint</span></a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Microsteps</h2>
+
+    <div id="microsteps">
+      {% include "partials/microsteps_list.html" %}
+    </div>
+
+    <hr />
+
+    <form method="post" action="/app/task/{{ task.id }}/generate_microsteps" hx-post="/app/task/{{ task.id }}/generate_microsteps" hx-target="#microsteps" hx-swap="innerHTML">
+      <div class="list">
+        <textarea name="context" rows="3" placeholder="Optional context (what you're trying to do, constraints)"></textarea>
+        <button class="primary" type="submit">Generate microsteps</button>
+      </div>
+    </form>
+
+    <p class="muted"><small>Generation uses your AI call budget (30/day).</small></p>
+  </div>
+{% endblock %}

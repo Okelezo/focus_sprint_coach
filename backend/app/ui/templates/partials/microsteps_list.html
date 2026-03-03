@@ -1,0 +1,9 @@
+{% if task.microsteps %}
+  <ol class="list" style="padding-left:18px; margin:0">
+    {% for s in task.microsteps|sort(attribute='order_index') %}
+      <li>{{ s.text }}</li>
+    {% endfor %}
+  </ol>
+{% else %}
+  <div class="muted"><small>No microsteps yet.</small></div>
+{% endif %}
