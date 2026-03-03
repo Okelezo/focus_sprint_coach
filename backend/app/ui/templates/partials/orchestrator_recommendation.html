@@ -1,0 +1,32 @@
+<div class="card" style="padding: 16px; background: #2a2a3a; border-left: 4px solid #4a9eff; margin-bottom: 16px;">
+  <div style="display: flex; align-items: center; margin-bottom: 8px;">
+    <div style="font-size: 1.2em; margin-right: 8px;">🤖</div>
+    <strong>Coach Recommendation</strong>
+  </div>
+  
+  {% if recommendation.recommended_step %}
+    <div style="margin-bottom: 12px;">
+      <div class="muted"><small>Best next action:</small></div>
+      <div style="font-size: 1.1em; margin: 4px 0;">{{ recommendation.recommended_step }}</div>
+      <div class="muted"><small>⏱️ ~{{ recommendation.estimated_minutes }} min</small></div>
+    </div>
+  {% endif %}
+  
+  {% if recommendation.reasoning %}
+    <div style="margin-bottom: 12px;">
+      <div class="muted"><small>Why this step:</small></div>
+      <div style="font-style: italic;">{{ recommendation.reasoning }}</div>
+    </div>
+  {% endif %}
+  
+  {% if recommendation.microsteps %}
+    <details style="margin-top: 12px;">
+      <summary style="cursor: pointer; color: #4a9eff;">View all {{ recommendation.microsteps|length }} microsteps</summary>
+      <div class="list" style="margin-top: 8px;">
+        {% for step in recommendation.microsteps %}
+          <div style="padding: 4px 0;">{{ loop.index }}. {{ step }}</div>
+        {% endfor %}
+      </div>
+    </details>
+  {% endif %}
+</div>

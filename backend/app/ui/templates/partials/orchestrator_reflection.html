@@ -1,0 +1,36 @@
+<div class="card" style="padding: 16px; background: #2a2a3a;">
+  <div style="display: flex; align-items: center; margin-bottom: 12px;">
+    <div style="font-size: 1.2em; margin-right: 8px;">✨</div>
+    <strong>Auto-generated Reflection</strong>
+  </div>
+  
+  <div style="margin-bottom: 12px;">
+    <div class="muted"><small>Outcome:</small></div>
+    <div class="badge" style="background: {% if reflection.outcome == 'done' %}#2d5f2d{% elif reflection.outcome == 'blocked' %}#8b4513{% else %}#4a4a5a{% endif %};">
+      {{ reflection.outcome|capitalize }}
+    </div>
+  </div>
+  
+  {% if reflection.reason %}
+    <div style="margin-bottom: 12px;">
+      <div class="muted"><small>What happened:</small></div>
+      <div>{{ reflection.reason }}</div>
+    </div>
+  {% endif %}
+  
+  {% if reflection.next_step %}
+    <div style="margin-bottom: 12px;">
+      <div class="muted"><small>Suggested next step:</small></div>
+      <div style="font-weight: bold; color: #4a9eff;">{{ reflection.next_step }}</div>
+    </div>
+  {% endif %}
+  
+  <div style="margin-top: 16px;">
+    <button class="primary" onclick="document.getElementById('outcome').value='{{ reflection.outcome }}'; document.getElementById('reason').value='{{ reflection.reason }}'; document.getElementById('next_step').value='{{ reflection.next_step }}';">
+      Use This Reflection
+    </button>
+    <button onclick="this.parentElement.parentElement.remove();" style="margin-left: 8px;">
+      Write My Own
+    </button>
+  </div>
+</div>

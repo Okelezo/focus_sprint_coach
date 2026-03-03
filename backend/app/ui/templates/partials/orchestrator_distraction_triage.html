@@ -1,0 +1,22 @@
+<div class="card" style="padding: 12px; margin-bottom: 8px; border-left: 4px solid {% if triage.urgency == 'urgent' %}#ff6b6b{% elif triage.urgency == 'quick_fix' %}#f4a460{% else %}#4a9eff{% endif %};">
+  <div style="display: flex; align-items: center; margin-bottom: 8px;">
+    <div style="font-size: 1.2em; margin-right: 8px;">
+      {% if triage.urgency == 'urgent' %}🚨{% elif triage.urgency == 'quick_fix' %}⚡{% else %}📝{% endif %}
+    </div>
+    <strong style="text-transform: capitalize;">{{ triage.urgency|replace('_', ' ') }}</strong>
+  </div>
+  
+  <div style="margin-bottom: 8px;">
+    <div class="muted"><small>Distraction:</small></div>
+    <div>{{ distraction_note }}</div>
+  </div>
+  
+  <div style="margin-bottom: 8px;">
+    <div class="muted"><small>Suggested action:</small></div>
+    <div style="font-weight: bold;">{{ triage.action }}</div>
+  </div>
+  
+  {% if triage.reasoning %}
+    <div class="muted"><small>{{ triage.reasoning }}</small></div>
+  {% endif %}
+</div>

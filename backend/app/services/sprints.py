@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models.sprint import Sprint, SprintStatus
@@ -88,3 +88,63 @@ async def add_reflection(
     await db.commit()
     await db.refresh(reflection)
     return reflection
+
+
+async def get_recent_sprint_stats(*, db: AsyncSession, user_id: UUID, days: int = 30) -> dict:
+    """Get user's sprint statistics for the last N days."""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    
+    # Get sprints in time window
+    sprints_result = await db.execute(
+        select(Sprint)
+        .where(Sprint.user_id == user_id, Sprint.started_at >= cutoff)
+        .order_by(Sprint.started_at.desc())
+    )
+    sprints = list(sprints_result.scalars().all())
+    
+    if not sprints:
+        return {
+            "total_sprints": 0,
+            "completion_rate": 0.0,
+            "avg_duration_minutes": 25,
+            "distraction_rate": 0.0,
+        }
+    
+    # Get reflections for these sprints
+    sprint_ids = [s.id for s in sprints]
+    reflections_result = await db.execute(
+        select(SprintReflection).where(SprintReflection.sprint_id.in_(sprint_ids))
+    )
+    reflections = list(reflections_result.scalars().all())
+    reflection_by_sprint = {r.sprint_id: r for r in reflections}
+    
+    # Get distraction events
+    events_result = await db.execute(
+        select(SprintEvent)
+        .where(
+            SprintEvent.sprint_id.in_(sprint_ids),
+            SprintEvent.type == SprintEventType.distraction.value,
+        )
+    )
+    distraction_events = list(events_result.scalars().all())
+    
+    # Calculate stats
+    total_sprints = len(sprints)
+    completed = sum(
+        1
+        for s in sprints
+        if s.id in reflection_by_sprint and reflection_by_sprint[s.id].outcome == "done"
+    )
+    completion_rate = completed / total_sprints if total_sprints > 0 else 0.0
+    
+    avg_duration = sum(s.duration_minutes for s in sprints) / total_sprints
+    
+    sprints_with_distractions = len(set(e.sprint_id for e in distraction_events))
+    distraction_rate = sprints_with_distractions / total_sprints if total_sprints > 0 else 0.0
+    
+    return {
+        "total_sprints": total_sprints,
+        "completion_rate": completion_rate,
+        "avg_duration_minutes": int(avg_duration),
+        "distraction_rate": distraction_rate,
+    }

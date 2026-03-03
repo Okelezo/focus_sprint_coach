@@ -1,0 +1,31 @@
+<div class="card" style="padding: 16px; background: #2a2a3a; border-left: 4px solid #f4a460;">
+  <div style="display: flex; align-items: center; margin-bottom: 12px;">
+    <div style="font-size: 1.2em; margin-right: 8px;">🤔</div>
+    <strong>Task needs clarification</strong>
+  </div>
+  
+  <div class="muted" style="margin-bottom: 12px;">
+    <small>{{ reasoning }}</small>
+  </div>
+  
+  <div style="margin-bottom: 16px;">
+    <strong>Quick questions to help break this down:</strong>
+    <ul style="margin: 8px 0; padding-left: 20px;">
+      {% for question in questions %}
+        <li style="margin: 4px 0;">{{ question }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  
+  <div class="muted" style="margin-bottom: 12px;">
+    <small>💡 Tip: Answer these in the context box below, then click "Prepare Sprint" again.</small>
+  </div>
+  
+  <form method="post" action="/app/orchestrator/prepare-sprint" hx-post="/app/orchestrator/prepare-sprint" hx-target="#sprint_prep_area" hx-swap="innerHTML">
+    <input type="hidden" name="task_id" value="{{ task.id }}" />
+    <div class="list">
+      <textarea name="context" rows="3" placeholder="Your answers to the questions above..." required></textarea>
+      <button class="primary" type="submit">Prepare Sprint</button>
+    </div>
+  </form>
+</div>

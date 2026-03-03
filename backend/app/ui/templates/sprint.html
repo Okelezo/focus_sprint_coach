@@ -14,19 +14,40 @@
           {% include "partials/sprint_active.html" %}
         {% endwith %}
       {% else %}
-        <h2>Start</h2>
-        <form method="post" action="/app/sprint/start" hx-post="/app/sprint/start" hx-target="#sprint_panel" hx-swap="innerHTML">
-          <div class="list">
-            <select name="task_id">
-              <option value="">(No task)</option>
-              {% for task in tasks %}
-                <option value="{{ task.id }}">{{ task.title }}</option>
-              {% endfor %}
-            </select>
-            <input name="duration_minutes" type="number" min="5" max="90" value="25" />
-            <button class="primary" type="submit">Start sprint</button>
+        <h2>Start Sprint</h2>
+        
+        <div id="sprint_prep_area">
+          <form method="post" action="/app/sprint/start" hx-post="/app/sprint/start" hx-target="#sprint_panel" hx-swap="innerHTML">
+            <div class="list">
+              <select name="task_id" id="task_select">
+                <option value="">(No task)</option>
+                {% for task in tasks %}
+                  <option value="{{ task.id }}">{{ task.title }}</option>
+                {% endfor %}
+              </select>
+              <input name="duration_minutes" type="number" min="5" max="90" value="25" />
+              <button class="primary" type="submit">Start Sprint</button>
+            </div>
+          </form>
+          
+          <div style="text-align: center; margin: 16px 0;">
+            <div class="muted"><small>or</small></div>
           </div>
-        </form>
+          
+          <form method="post" action="/app/orchestrator/prepare-sprint" hx-post="/app/orchestrator/prepare-sprint" hx-target="#sprint_prep_area" hx-swap="innerHTML">
+            <input type="hidden" name="task_id" id="ai_task_id" />
+            <input type="hidden" name="context" value="" />
+            <button type="submit" class="primary" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" 
+                    onclick="document.getElementById('ai_task_id').value = document.getElementById('task_select').value; return document.getElementById('task_select').value !== '';"
+                    title="Get AI-powered recommendations for your sprint">
+              🤖 Get AI Coach Recommendations
+            </button>
+          </form>
+          
+          <div class="muted" style="text-align: center; margin-top: 8px;">
+            <small>AI Coach analyzes your task and suggests the best next action</small>
+          </div>
+        </div>
       {% endif %}
     </div>
   </div>

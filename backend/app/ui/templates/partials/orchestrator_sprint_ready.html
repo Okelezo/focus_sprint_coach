@@ -1,0 +1,14 @@
+{% include "partials/orchestrator_recommendation.html" %}
+
+<form method="post" action="/app/sprint/start" hx-post="/app/sprint/start" hx-target="#sprint_panel" hx-swap="innerHTML">
+  <input type="hidden" name="task_id" value="{{ task.id }}" />
+  <div class="list">
+    <label>Sprint duration (minutes)</label>
+    <input name="duration_minutes" type="number" min="5" max="90" value="{{ suggested_duration }}" />
+    <button class="primary" type="submit">Start Sprint with This Plan</button>
+  </div>
+</form>
+
+<div style="margin-top: 12px; text-align: center;">
+  <a href="/app/sprint" style="color: #888;">Cancel</a>
+</div>
