@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, Index, Text, func, text
+from sqlalchemy import Date, DateTime, ForeignKey, Index, Text, func, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -13,6 +13,7 @@ class Task(Base):
 
     __table_args__ = (
         Index("ix_tasks_user_id_created_at_desc", "user_id", text("created_at DESC")),
+        Index("ix_tasks_user_scheduled_date", "user_id", "scheduled_date"),
     )
 
     id: Mapped[UUID] = mapped_column(
@@ -28,6 +29,8 @@ class Task(Base):
     title: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    scheduled_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     user = relationship("User", back_populates="tasks")
     microsteps = relationship("MicroStep", back_populates="task", cascade="all, delete-orphan")

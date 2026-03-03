@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="row" style="justify-content: space-between; align-items: baseline;">
+    <div>
+      <a href="/app">← Back</a>
+      <h1 style="margin-top:10px">Calendar</h1>
+      <div class="muted"><small>{{ user.email }}</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Week View</h2>
+    
+    <!-- Week navigation -->
+    <div class="row" style="margin-bottom: 16px;">
+      <a href="/app/calendar?target_date={{ (week_start - timedelta(days=7)).isoformat() }}" style="flex:0">← Prev Week</a>
+      <div style="flex:1; text-align:center">
+        <strong>{{ week_start.strftime('%b %d') }} - {{ (week_start + timedelta(days=6)).strftime('%b %d, %Y') }}</strong>
+      </div>
+      <a href="/app/calendar?target_date={{ (week_start + timedelta(days=7)).isoformat() }}" style="flex:0">Next Week →</a>
+    </div>
+
+    <!-- Week grid -->
+    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 24px;">
+      {% for i in range(7) %}
+        {% set day = week_start + timedelta(days=i) %}
+        {% set day_key = day.isoformat() %}
+        {% set is_selected = (day == selected_date) %}
+        {% set is_today = (day == date.today()) %}
+        {% set day_data = week_overview.get(day_key, {}) %}
+        
+        <a href="/app/calendar?target_date={{ day_key }}" 
+           class="card" 
+           style="padding: 12px; text-decoration: none; {% if is_selected %}background: #2a2a3a; border: 2px solid #4a9eff;{% endif %}">
+          <div style="text-align: center;">
+            <div class="muted"><small>{{ day.strftime('%a') }}</small></div>
+            <div style="font-size: 1.2em; {% if is_today %}color: #4a9eff; font-weight: bold;{% endif %}">
+              {{ day.day }}
+            </div>
+            {% if day_data.get('tasks') %}
+              <div class="badge" style="margin-top: 4px;">{{ day_data.get('tasks')|length }} tasks</div>
+            {% endif %}
+            {% if day_data.get('sprint_count', 0) > 0 %}
+              <div class="muted"><small>{{ day_data.get('sprint_count') }} sprints</small></div>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+    <hr />
+
+    <!-- Selected day details -->
+    <h2>{{ selected_date.strftime('%A, %B %d, %Y') }}</h2>
+    
+    <!-- Tasks for selected date -->
+    <h3>Tasks</h3>
+    <div class="list" style="margin-bottom: 24px;">
+      {% for task in tasks %}
+        <div class="card" style="padding:12px">
+          <div class="row">
+            <div style="flex:1">
+              <a href="/app/task/{{ task.id }}">{{ task.title }}</a>
+              {% if task.completed_at %}
+                <span class="badge" style="background: #2d5f2d;">✓ Done</span>
+              {% endif %}
+            </div>
+            <div style="flex:0">
+              {% if task.completed_at %}
+                <form method="post" action="/app/task/{{ task.id }}/uncomplete" style="display:inline">
+                  <button type="submit" style="padding: 4px 8px;">Undo</button>
+                </form>
+              {% else %}
+                <form method="post" action="/app/task/{{ task.id }}/complete" style="display:inline">
+                  <button type="submit" class="primary" style="padding: 4px 8px;">Complete</button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="muted"><small>No tasks scheduled for this day.</small></div>
+      {% endfor %}
+    </div>
+
+    <!-- Sprints for selected date -->
+    <h3>Sprints</h3>
+    <div class="list">
+      {% for sprint in sprints %}
+        <div class="card" style="padding:12px">
+          <div class="row">
+            <div>
+              <div class="badge">{{ sprint.status }}</div>
+              <div class="muted"><small>{{ sprint.started_at.strftime('%H:%M') }}{% if sprint.ended_at %} → {{ sprint.ended_at.strftime('%H:%M') }}{% endif %}</small></div>
+              <div><small>{{ sprint.duration_minutes }} min</small></div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="muted"><small>No sprints on this day.</small></div>
+      {% endfor %}
+    </div>
+
+    <hr />
+
+    <!-- Quick add task to selected date -->
+    <h3>Add Task for {{ selected_date.strftime('%b %d') }}</h3>
+    <form method="post" action="/app/tasks">
+      <input type="hidden" name="scheduled_date" value="{{ selected_date.isoformat() }}" />
+      <div class="row">
+        <input name="title" placeholder="New task title" required />
+        <button class="primary" type="submit" style="flex:0">Add</button>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}
