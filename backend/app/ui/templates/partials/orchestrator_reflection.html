@@ -26,7 +26,7 @@
   {% endif %}
   
   <div style="margin-top: 16px;">
-    <button class="primary" onclick="document.getElementById('outcome').value='{{ reflection.outcome }}'; document.getElementById('reason').value='{{ reflection.reason }}'; document.getElementById('next_step').value='{{ reflection.next_step }}';">
+    <button class="primary" onclick="document.getElementById('outcome').value={{ reflection.outcome|tojson }}; document.getElementById('reason').value={{ (reflection.reason or '')|tojson }}; document.getElementById('next_step').value={{ (reflection.next_step or '')|tojson }};">
       Use This Reflection
     </button>
     <button onclick="this.parentElement.parentElement.remove();" style="margin-left: 8px;">

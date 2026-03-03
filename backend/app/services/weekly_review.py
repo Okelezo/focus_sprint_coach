@@ -47,9 +47,15 @@ async def generate_weekly_summary(*, db: AsyncSession, user_id: UUID, week_offse
         }
     """
     # Calculate week boundaries
+    # week_offset:
+    # -  0 = current week (starting Monday)
+    # - -1 = last week
+    # - +1 = next week
     now = datetime.now(timezone.utc)
-    week_start = now - timedelta(days=now.weekday() + (7 * abs(week_offset)))
-    week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
+    current_week_start = (now - timedelta(days=now.weekday())).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    week_start = current_week_start + timedelta(days=7 * week_offset)
     week_end = week_start + timedelta(days=7)
     
     # Get sprints in week

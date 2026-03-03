@@ -100,7 +100,7 @@
       </div>
     </div>
     
-    <button class="primary" onclick="navigator.clipboard.writeText('{{ experiment.experiment }}'); alert('Experiment copied to clipboard!');">
+    <button class="primary" onclick="navigator.clipboard.writeText({{ experiment.experiment|tojson }}); alert('Experiment copied to clipboard!');">
       📋 Copy Experiment
     </button>
   </div>
@@ -113,7 +113,7 @@
       <div style="color: white; font-size: 1.1em;">{{ summary.shareable_stat }}</div>
     </div>
     
-    <button class="primary" style="background: white; color: #667eea;" onclick="navigator.clipboard.writeText('{{ summary.shareable_stat }}'); alert('Stat copied to clipboard!');">
+    <button class="primary" style="background: white; color: #667eea;" onclick="navigator.clipboard.writeText({{ summary.shareable_stat|tojson }}); alert('Stat copied to clipboard!');">
       📋 Copy to Share
     </button>
   </div>
