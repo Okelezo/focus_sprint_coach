@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="row" style="justify-content: space-between; align-items: baseline;">
+    <div>
+      <a href="/app">← Back</a>
+      <h1 style="margin-top:10px">Weekly Review</h1>
+      <div class="muted"><small>{{ week_label }}</small></div>
+    </div>
+  </div>
+
+  <!-- Summary Card -->
+  <div class="card">
+    <h2>📊 This Week's Stats</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+      <div class="card" style="padding: 16px; text-align: center; background: #2a2a3a;">
+        <div style="font-size: 2em; font-weight: bold; color: #4a9eff;">{{ summary.total_sprints }}</div>
+        <div class="muted"><small>Sprints</small></div>
+      </div>
+      
+      <div class="card" style="padding: 16px; text-align: center; background: #2a2a3a;">
+        <div style="font-size: 2em; font-weight: bold; color: #4a9eff;">{{ (summary.total_minutes / 60)|round(1) }}h</div>
+        <div class="muted"><small>Deep Work</small></div>
+      </div>
+      
+      <div class="card" style="padding: 16px; text-align: center; background: #2a2a3a;">
+        <div style="font-size: 2em; font-weight: bold; color: {% if summary.completion_rate >= 0.7 %}#2d5f2d{% elif summary.completion_rate >= 0.4 %}#f4a460{% else %}#8b4513{% endif %};">
+          {{ (summary.completion_rate * 100)|round(0)|int }}%
+        </div>
+        <div class="muted"><small>Completion Rate</small></div>
+      </div>
+      
+      <div class="card" style="padding: 16px; text-align: center; background: #2a2a3a;">
+        <div style="font-size: 2em; font-weight: bold; color: #4a9eff;">{{ summary.distraction_count }}</div>
+        <div class="muted"><small>Distractions</small></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <strong>Most Productive:</strong> {{ summary.most_productive_day }}
+    </div>
+
+    {% if summary.top_outcomes %}
+      <div style="margin-bottom: 24px;">
+        <strong>Outcomes:</strong>
+        <div class="row" style="gap: 8px; margin-top: 8px;">
+          {% for outcome, count in summary.top_outcomes.items() %}
+            <div class="badge" style="background: {% if outcome == 'done' %}#2d5f2d{% elif outcome == 'blocked' %}#8b4513{% else %}#4a4a5a{% endif %};">
+              {{ outcome }}: {{ count }}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if summary.task_breakdown %}
+      <details style="margin-bottom: 24px;">
+        <summary style="cursor: pointer; font-weight: bold;">Tasks Worked On ({{ summary.task_breakdown|length }})</summary>
+        <div class="list" style="margin-top: 12px;">
+          {% for task_title, sprint_count in summary.task_breakdown.items() %}
+            <div style="padding: 4px 0;">
+              <strong>{{ task_title }}</strong>
+              <span class="muted"><small>({{ sprint_count }} sprints)</small></span>
+            </div>
+          {% endfor %}
+        </div>
+      </details>
+    {% endif %}
+  </div>
+
+  <!-- Patterns Card -->
+  <div class="card">
+    <h2>🔍 Patterns Detected</h2>
+    <div class="list">
+      {% for pattern in summary.patterns %}
+        <div class="card" style="padding: 12px; background: #2a2a3a;">
+          {{ pattern }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Experiment Card -->
+  <div class="card" style="border-left: 4px solid #667eea;">
+    <h2>🧪 Experiment for Next Week</h2>
+    
+    <div style="margin-bottom: 16px;">
+      <div style="font-size: 1.2em; font-weight: bold; margin-bottom: 8px;">
+        {{ experiment.experiment }}
+      </div>
+      
+      <div style="margin-bottom: 12px;">
+        <div class="muted"><small>Why try this:</small></div>
+        <div>{{ experiment.reasoning }}</div>
+      </div>
+      
+      <div>
+        <div class="muted"><small>How to measure success:</small></div>
+        <div>{{ experiment.how_to_measure }}</div>
+      </div>
+    </div>
+    
+    <button class="primary" onclick="navigator.clipboard.writeText('{{ experiment.experiment }}'); alert('Experiment copied to clipboard!');">
+      📋 Copy Experiment
+    </button>
+  </div>
+
+  <!-- Shareable Stat Card -->
+  <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <h2 style="color: white;">📱 Share Your Progress</h2>
+    
+    <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+      <div style="color: white; font-size: 1.1em;">{{ summary.shareable_stat }}</div>
+    </div>
+    
+    <button class="primary" style="background: white; color: #667eea;" onclick="navigator.clipboard.writeText('{{ summary.shareable_stat }}'); alert('Stat copied to clipboard!');">
+      📋 Copy to Share
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <div class="row" style="margin-top: 24px;">
+    {% if week_offset < 0 %}
+      <a href="/app/weekly-review?week_offset={{ week_offset + 1 }}">← More Recent</a>
+    {% endif %}
+    <div style="flex:1"></div>
+    <a href="/app/weekly-review?week_offset={{ week_offset - 1 }}">Older →</a>
+  </div>
+{% endblock %}

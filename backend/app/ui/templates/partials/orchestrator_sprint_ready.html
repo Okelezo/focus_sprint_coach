@@ -1,5 +1,31 @@
 {% include "partials/orchestrator_recommendation.html" %}
 
+{% if paralysis and paralysis.is_paralyzed %}
+  <div class="card" style="padding: 16px; background: #3a2a2a; border-left: 4px solid #ff6b6b; margin-bottom: 16px;">
+    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+      <div style="font-size: 1.2em; margin-right: 8px;">⚠️</div>
+      <strong>Task Paralysis Detected</strong>
+    </div>
+    <div class="muted" style="margin-bottom: 8px;">
+      <small>Warning signs:</small>
+      <ul style="margin: 4px 0; padding-left: 20px;">
+        {% for indicator in paralysis.indicators %}
+          <li style="margin: 2px 0;"><small>{{ indicator }}</small></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div style="white-space: pre-line; font-size: 0.9em;">{{ paralysis.suggestion }}</div>
+  </div>
+{% endif %}
+
+<div class="card" style="padding: 12px; background: #2a2a3a; margin-bottom: 16px;">
+  <div style="display: flex; align-items: center; margin-bottom: 4px;">
+    <div style="font-size: 1em; margin-right: 8px;">⏱️</div>
+    <strong>Recommended Duration: {{ suggested_duration }} minutes</strong>
+  </div>
+  <div class="muted"><small>{{ duration_reasoning }}</small></div>
+</div>
+
 <form method="post" action="/app/sprint/start" hx-post="/app/sprint/start" hx-target="#sprint_panel" hx-swap="innerHTML">
   <input type="hidden" name="task_id" value="{{ task.id }}" />
   <div class="list">

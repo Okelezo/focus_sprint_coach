@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="row" style="justify-content: space-between; align-items: baseline;">
+    <div>
+      <a href="/app">← Back</a>
+      <h1 style="margin-top:10px">Your Insights</h1>
+      <div class="muted"><small>Personalized recommendations based on your patterns</small></div>
+    </div>
+  </div>
+
+  <!-- Duration Recommendation -->
+  <div class="card" style="border-left: 4px solid #4a9eff;">
+    <h2>⏱️ Optimal Sprint Duration</h2>
+    
+    <div style="font-size: 2em; font-weight: bold; color: #4a9eff; margin-bottom: 8px;">
+      {{ recommendations.duration.recommended_duration }} minutes
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      {{ recommendations.duration.reasoning }}
+    </div>
+    
+    <div class="muted">
+      <small>Confidence: {{ (recommendations.duration.confidence * 100)|round(0)|int }}%</small>
+    </div>
+  </div>
+
+  <!-- Time of Day Analysis -->
+  <div class="card" style="border-left: 4px solid #f4a460;">
+    <h2>🌅 Best Time to Sprint</h2>
+    
+    {% if recommendations.time_of_day.best_hours %}
+      <div style="margin-bottom: 16px;">
+        <strong>Your peak hours:</strong>
+        <div class="row" style="gap: 8px; margin-top: 8px;">
+          {% for hour in recommendations.time_of_day.best_hours %}
+            <div class="badge" style="background: #2d5f2d;">{{ hour }}:00</div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      {% if recommendations.time_of_day.worst_hours %}
+        <div style="margin-bottom: 16px;">
+          <strong>Avoid these hours:</strong>
+          <div class="row" style="gap: 8px; margin-top: 8px;">
+            {% for hour in recommendations.time_of_day.worst_hours %}
+              <div class="badge" style="background: #8b4513;">{{ hour }}:00</div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+    
+    <div style="margin-top: 12px;">
+      {{ recommendations.time_of_day.recommendation }}
+    </div>
+    
+    <div class="muted" style="margin-top: 8px;">
+      <small>Based on {{ recommendations.time_of_day.sample_size }} sprints</small>
+    </div>
+  </div>
+
+  <!-- Task Paralysis (if available) -->
+  {% if recommendations.task_paralysis %}
+    {% if recommendations.task_paralysis.is_paralyzed %}
+      <div class="card" style="border-left: 4px solid #ff6b6b; background: #2a2a3a;">
+        <h2>⚠️ Task Paralysis Detected</h2>
+        
+        <div style="margin-bottom: 16px;">
+          <strong>Warning signs:</strong>
+          <ul style="margin: 8px 0; padding-left: 20px;">
+            {% for indicator in recommendations.task_paralysis.indicators %}
+              <li style="margin: 4px 0;">{{ indicator }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+          {{ recommendations.task_paralysis.suggestion }}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <!-- Quick Actions -->
+  <div class="card">
+    <h2>📊 More Insights</h2>
+    
+    <div class="list">
+      <a href="/app/weekly-review" class="card" style="padding: 16px; text-decoration: none; display: block;">
+        <div style="font-size: 1.2em; margin-bottom: 4px;">📅 Weekly Review</div>
+        <div class="muted"><small>See your patterns, get an experiment for next week</small></div>
+      </a>
+      
+      <a href="/app/history" class="card" style="padding: 16px; text-decoration: none; display: block;">
+        <div style="font-size: 1.2em; margin-bottom: 4px;">📈 Today's History</div>
+        <div class="muted"><small>Review today's sprints and reflections</small></div>
+      </a>
+    </div>
+  </div>
+{% endblock %}

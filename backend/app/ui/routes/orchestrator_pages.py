@@ -14,6 +14,7 @@ from app.services.orchestrator import (
     generate_reflection,
     _get_user_context,
 )
+from app.services.adaptive_engine import recommend_sprint_duration, detect_task_paralysis
 from app.services.ai import breakdown_task
 from app.services.tasks import get_task_detail
 from app.observability.analytics import track
@@ -71,7 +72,13 @@ async def prepare_sprint(
         user_context=user_context,
     )
     
-    await track(user.id, "orchestrator_prepared_sprint", {"task_id": str(task_id)}, db=db)
+    # Get adaptive duration recommendation
+    duration_rec = await recommend_sprint_duration(db=db, user_id=user.id)
+    
+    # Check for task paralysis
+    paralysis = await detect_task_paralysis(db=db, user_id=user.id, task_id=task_id)
+    
+    await track(user.id, "orchestrator_prepared_sprint", {"task_id": str(task_id), "paralysis": paralysis["is_paralyzed"]}, db=db)
     
     # Return recommendation with option to start sprint
     return templates.TemplateResponse(
@@ -83,7 +90,9 @@ async def prepare_sprint(
                 **recommendation,
                 "microsteps": microsteps,
             },
-            "suggested_duration": user_context.get("avg_duration", 25),
+            "suggested_duration": duration_rec["recommended_duration"],
+            "duration_reasoning": duration_rec["reasoning"],
+            "paralysis": paralysis,
         },
     )
 
