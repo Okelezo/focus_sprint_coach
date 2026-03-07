@@ -22,7 +22,10 @@
     <form method="post" action="/app/task/{{ task.id }}/generate_microsteps" hx-post="/app/task/{{ task.id }}/generate_microsteps" hx-target="#microsteps" hx-swap="innerHTML">
       <div class="list">
         <textarea name="context" rows="3" placeholder="Optional context (what you're trying to do, constraints)"></textarea>
-        <button class="primary" type="submit">Generate microsteps</button>
+        <button class="primary" type="submit">
+          <span class="htmx-indicator">Generating…</span>
+          <span class="htmx-hide-when-request">Generate microsteps</span>
+        </button>
       </div>
     </form>
 

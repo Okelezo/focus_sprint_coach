@@ -1,0 +1,7 @@
+{% set p = request.url.path %}
+<nav class="nav" aria-label="Primary">
+  <a href="/app" class="{% if p == '/app' %}active{% endif %}">Tasks</a>
+  <a href="/app/sprint" class="{% if p.startswith('/app/sprint') %}active{% endif %}">Sprint</a>
+  <a href="/app/calendar" class="{% if p.startswith('/app/calendar') %}active{% endif %}">Calendar</a>
+  <a href="/app/insights" class="{% if p.startswith('/app/insights') or p.startswith('/app/weekly-review') %}active{% endif %}">Insights</a>
+</nav>

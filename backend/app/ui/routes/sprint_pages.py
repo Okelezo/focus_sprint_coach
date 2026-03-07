@@ -1,6 +1,7 @@
+from datetime import datetime
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,10 +20,18 @@ router = APIRouter(prefix="/app", tags=["ui"])
 @router.get("/sprint", response_class=HTMLResponse)
 async def sprint_page(
     request: Request,
+    task_id: str | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
     user=Depends(get_current_user_from_cookie),
 ) -> HTMLResponse:
     tasks = await list_tasks(db=db, user_id=user.id)
+
+    selected_task_id = None
+    if task_id:
+        try:
+            selected_task_id = UUID(task_id)
+        except ValueError:
+            selected_task_id = None
 
     active_result = await db.execute(
         select(Sprint)
@@ -33,7 +42,13 @@ async def sprint_page(
 
     return templates.TemplateResponse(
         "sprint.html",
-        {"request": request, "user": user, "tasks": tasks, "active": active},
+        {
+            "request": request,
+            "user": user,
+            "tasks": tasks,
+            "active": active,
+            "selected_task_id": selected_task_id,
+        },
     )
 
 

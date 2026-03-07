@@ -1,0 +1,33 @@
+<header class="appbar">
+  <div class="container">
+    <div class="appbar-inner">
+      <a class="brand" href="/app" aria-label="Focus Sprint Coach">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Focus Sprint Coach</span>
+      </a>
+
+      {% include "partials/nav.html" %}
+
+      <div class="spacer"></div>
+
+      <div class="user-menu">
+        <details>
+          <summary>
+            <span class="user-chip">{{ user.email }}</span>
+            <span aria-hidden="true">▾</span>
+          </summary>
+          <div class="menu-panel" role="menu">
+            <a role="menuitem" href="/app/billing">Billing</a>
+            <a role="menuitem" href="/app/feedback">Send feedback</a>
+            <div class="menu-divider"></div>
+            <form method="post" action="/ui/logout">
+              <button role="menuitem" class="danger" type="submit">Logout</button>
+            </form>
+          </div>
+        </details>
+      </div>
+
+      <a class="button mobile-nav-toggle" href="/app" aria-label="Go to tasks">Menu</a>
+    </div>
+  </div>
+</header>

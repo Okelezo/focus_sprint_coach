@@ -1,0 +1,19 @@
+{% set p = request.url.path %}
+<nav class="bottom-nav" aria-label="Primary" role="navigation">
+  <a href="/app" class="bottom-nav-item {% if p == '/app' %}active{% endif %}">
+    <span class="bottom-nav-icon" aria-hidden="true">☑️</span>
+    <span class="bottom-nav-label">Tasks</span>
+  </a>
+  <a href="/app/sprint" class="bottom-nav-item {% if p.startswith('/app/sprint') %}active{% endif %}">
+    <span class="bottom-nav-icon" aria-hidden="true">⏱️</span>
+    <span class="bottom-nav-label">Sprint</span>
+  </a>
+  <a href="/app/calendar" class="bottom-nav-item {% if p.startswith('/app/calendar') %}active{% endif %}">
+    <span class="bottom-nav-icon" aria-hidden="true">🗓️</span>
+    <span class="bottom-nav-label">Calendar</span>
+  </a>
+  <a href="/app/insights" class="bottom-nav-item {% if p.startswith('/app/insights') or p.startswith('/app/weekly-review') %}active{% endif %}">
+    <span class="bottom-nav-icon" aria-hidden="true">💡</span>
+    <span class="bottom-nav-label">Insights</span>
+  </a>
+</nav>

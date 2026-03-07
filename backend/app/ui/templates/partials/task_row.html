@@ -1,11 +1,14 @@
-<div class="card" style="padding:12px">
-  <div class="row">
+<div class="card soft">
+  <div class="row" style="align-items: flex-start;">
     <div>
-      <a href="/app/task/{{ task.id }}">{{ task.title }}</a>
-      <div class="muted"><small>{{ task.created_at }}</small></div>
+      <div style="font-weight: 700; margin-bottom: 4px;">
+        <a href="/app/task/{{ task.id }}">{{ task.title }}</a>
+      </div>
+      <div class="kicker">Created {{ task.created_at }}</div>
     </div>
-    <div style="flex:0">
-      <a href="/app/task/{{ task.id }}"><span class="badge">Open</span></a>
+    <div style="flex:0; display:flex; gap:10px; align-items:center;">
+      <a class="button secondary" href="/app/task/{{ task.id }}">Break into steps</a>
+      <a class="button primary" href="/app/sprint?task_id={{ task.id }}">Start sprint</a>
     </div>
   </div>
 </div>

@@ -22,7 +22,7 @@
               <select name="task_id" id="task_select">
                 <option value="">(No task)</option>
                 {% for task in tasks %}
-                  <option value="{{ task.id }}">{{ task.title }}</option>
+                  <option value="{{ task.id }}" {% if selected_task_id and selected_task_id == task.id %}selected{% endif %}>{{ task.title }}</option>
                 {% endfor %}
               </select>
               <input name="duration_minutes" type="number" min="5" max="90" value="25" />

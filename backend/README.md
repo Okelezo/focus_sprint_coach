@@ -143,6 +143,26 @@ Manual UI smoke:
 - **Sprint**: `GET /app/sprint`
 - **Today history**: `GET /app/history`
 
+## UI notes (dark theme)
+
+- **Stylesheet**
+  - `app/ui/static/styles.css`
+  - Uses CSS variables for design tokens (e.g. `--bg`, `--surface`, `--text`, `--muted`, `--accent`, `--danger`).
+
+- **Layout / app shell**
+  - Base layout: `app/ui/templates/base.html`
+  - App bar: `app/ui/templates/partials/appbar.html`
+  - Primary nav: `app/ui/templates/partials/nav.html`
+  - Toast: `app/ui/templates/partials/toast.html`
+
+- **Tasks page**
+  - Page: `app/ui/templates/app.html`
+  - Task row card: `app/ui/templates/partials/task_row.html`
+
+- **HTMX micro-interactions**
+  - Loading indicators use `.htmx-indicator` + `.htmx-hide-when-request` and are styled in `styles.css`.
+  - Toasts can be triggered in-page via `window.fscToast('...')`.
+
 ## Observability
 
 ### Analytics

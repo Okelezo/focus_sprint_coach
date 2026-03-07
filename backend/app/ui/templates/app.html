@@ -1,47 +1,50 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="row" style="justify-content: space-between; align-items: baseline;">
+  <div class="stack">
     <div>
       <h1>Tasks</h1>
-      <div class="muted"><small>{{ user.email }}</small></div>
+      <div class="kicker">Add a task you’re avoiding. We’ll break it into tiny steps.</div>
     </div>
-    <div style="flex:0">
-      <form method="post" action="/ui/logout">
-        <button class="danger" type="submit">Logout</button>
+
+    <div class="card">
+      <form method="post" action="/app/tasks" hx-post="/app/tasks" hx-target="#tasks" hx-swap="afterbegin" hx-on::after-request="this.reset(); var e=document.getElementById('empty_state'); if(e) e.remove(); if(window.fscToast) window.fscToast('Task added');">
+        <div class="row">
+          <input name="title" placeholder="What are you avoiding right now?" required autocomplete="off" />
+          <button class="primary" type="submit" style="flex:0">Add task</button>
+        </div>
+        <div class="helper">Tip: Keep it short. Example: “Write first draft of pitch”</div>
       </form>
-    </div>
-  </div>
 
-  <div class="card">
-    <form method="post" action="/app/tasks" hx-post="/app/tasks" hx-target="#tasks" hx-swap="afterbegin" hx-on::after-request="this.reset(); var e=document.getElementById('empty_hint'); if(e) e.remove();">
-      <div class="row">
-        <input name="title" placeholder="New task title" required />
-        <button class="primary" type="submit" style="flex:0">Add</button>
+      <hr />
+
+      <div id="tasks" class="stack" aria-live="polite">
+        {% for task in tasks %}
+          {% include "partials/task_row.html" %}
+        {% else %}
+          <div id="empty_state" class="empty">
+            <div class="empty-icon" aria-hidden="true">🧠</div>
+            <h2 style="margin-bottom:6px">Create your first task</h2>
+            <div class="kicker" style="margin-bottom:12px">A calm next step beats a perfect plan.</div>
+            <div class="stack" style="gap:8px">
+              <div class="row" style="gap:10px">
+                <span class="badge accent" style="flex:0">1</span>
+                <div class="kicker">Add a task</div>
+              </div>
+              <div class="row" style="gap:10px">
+                <span class="badge accent" style="flex:0">2</span>
+                <div class="kicker">Break it into micro-steps</div>
+              </div>
+              <div class="row" style="gap:10px">
+                <span class="badge accent" style="flex:0">3</span>
+                <div class="kicker">Start a sprint</div>
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <button class="primary" type="button" onclick="document.querySelector('input[name=title]').focus();">Create your first task</button>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-    </form>
-
-    <hr />
-
-    <div class="row">
-      <a href="/app/sprint">Sprint</a>
-      <div style="flex:0">|</div>
-      <a href="/app/calendar">Calendar</a>
-      <div style="flex:0">|</div>
-      <a href="/app/insights">💡 Insights</a>
-      <div style="flex:0">|</div>
-      <a href="/app/weekly-review">📊 Weekly Review</a>
-      <div style="flex:0">|</div>
-      <a href="/app/history">Today</a>
-    </div>
-
-    <hr />
-
-    <div id="tasks" class="list">
-      {% for task in tasks %}
-        {% include "partials/task_row.html" %}
-      {% else %}
-        <div id="empty_hint" class="muted"><small>No tasks yet.</small></div>
-      {% endfor %}
     </div>
   </div>
 {% endblock %}

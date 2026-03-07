@@ -4,17 +4,47 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ title or 'Focus Sprint Coach' }}</title>
-    <link rel="stylesheet" href="/static/app.css" />
+    <link rel="stylesheet" href="/static/styles.css" />
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </head>
   <body>
-    <div class="container">
-      <div class="row" style="justify-content: flex-end; margin: 8px 0;">
-        <a href="/app/billing">Billing</a>
-        <div style="flex:0">|</div>
-        <a href="/app/feedback">Send feedback</a>
-      </div>
-      {% block body %}{% endblock %}
+    <div class="app-shell">
+      {% if user is defined %}
+        {% include "partials/appbar.html" %}
+      {% endif %}
+
+      <main class="container page" id="main" tabindex="-1">
+        {% block body %}{% endblock %}
+      </main>
+
+      {% if user is defined %}
+        {% include "partials/bottom_nav.html" %}
+      {% endif %}
+
+      {% include "partials/toast.html" %}
     </div>
+
+    <script>
+      (function () {
+        var toast = document.getElementById('toast');
+        var toastText = document.getElementById('toast_text');
+        var timer = null;
+
+        function showToast(message) {
+          if (!toast || !toastText) return;
+          toastText.textContent = message;
+          toast.classList.add('show');
+          if (timer) window.clearTimeout(timer);
+          timer = window.setTimeout(function () { toast.classList.remove('show'); }, 2400);
+        }
+
+        window.fscToast = showToast;
+
+        document.body.addEventListener('htmx:afterRequest', function (evt) {
+          var msg = evt.detail && evt.detail.xhr && evt.detail.xhr.getResponseHeader('X-FSC-Toast');
+          if (msg) showToast(msg);
+        });
+      })();
+    </script>
   </body>
 </html>
