@@ -1,31 +1,151 @@
 {% extends "base.html" %}
 {% block body %}
-  <h1>Focus Sprint Coach</h1>
-  <p class="muted">Log in or create an account.</p>
+  <div class="landing">
+    <div class="landing-grid">
+      <section class="landing-left" aria-label="Product overview">
+        <div class="kicker">Focus Sprint Coach</div>
+        <h1 class="landing-title">Turn overwhelm into the next 10 minutes.</h1>
+        <p class="landing-subtitle">A calm, coach-like flow to go from “too much” to a single next action.</p>
 
-  <div id="auth_error"></div>
+        <div class="landing-bullets">
+          <div class="landing-bullet">
+            <div class="landing-bullet-dot" aria-hidden="true"></div>
+            <div><strong>Tiny next steps</strong><div class="muted"><small>Break tasks into micro-steps you can actually start.</small></div></div>
+          </div>
+          <div class="landing-bullet">
+            <div class="landing-bullet-dot" aria-hidden="true"></div>
+            <div><strong>Timed focus sprints</strong><div class="muted"><small>10/15/25-minute sprints that reduce decision fatigue.</small></div></div>
+          </div>
+          <div class="landing-bullet">
+            <div class="landing-bullet-dot" aria-hidden="true"></div>
+            <div><strong>Weekly insights</strong><div class="muted"><small>Spot patterns, iterate, and build a sustainable rhythm.</small></div></div>
+          </div>
+        </div>
 
-  <div class="card">
-    <h2>Login</h2>
-    <form method="post" action="/ui/login" hx-post="/ui/login" hx-target="#auth_error" hx-swap="innerHTML">
-      <div class="list">
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <button class="primary" type="submit">Login</button>
-      </div>
-    </form>
+        <div class="card soft landing-how">
+          <h2>How it works</h2>
+          <ol class="how-list">
+            <li>Add a task</li>
+            <li>Get micro-steps</li>
+            <li>Start a 10/15/25-minute sprint</li>
+            <li>Reflect (so next time is easier)</li>
+          </ol>
+        </div>
+      </section>
 
-    <hr />
+      <section class="landing-right" aria-label="Authentication">
+        <div class="card auth-card">
+          <div class="auth-tabs" role="tablist" aria-label="Login or register">
+            <button type="button" class="auth-tab active" role="tab" aria-selected="true" aria-controls="panel_login" id="tab_login">Login</button>
+            <button type="button" class="auth-tab" role="tab" aria-selected="false" aria-controls="panel_register" id="tab_register">Create account</button>
+          </div>
 
-    <h2>Register</h2>
-    <form method="post" action="/ui/register" hx-post="/ui/register" hx-target="#auth_error" hx-swap="innerHTML">
-      <div class="list">
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <button class="primary" type="submit">Create account</button>
-      </div>
-    </form>
+          <div id="auth_error" class="auth-error" aria-live="polite"></div>
 
-    <p class="muted"><small>Tip: for local MVP use any email + password.</small></p>
+          <div id="panel_login" class="auth-panel" role="tabpanel" aria-labelledby="tab_login">
+            <form class="auth-form" method="post" action="/ui/login" hx-post="/ui/login" hx-target="#auth_error" hx-swap="innerHTML">
+              <div class="field">
+                <label for="login_email">Email</label>
+                <input id="login_email" type="email" name="email" autocomplete="email" required />
+              </div>
+              <div class="field">
+                <label for="login_password">Password</label>
+                <div class="input-with-action">
+                  <input id="login_password" type="password" name="password" autocomplete="current-password" required />
+                  <button class="input-action" type="button" data-toggle-password="login_password" aria-label="Show password">Show</button>
+                </div>
+              </div>
+              <button class="primary" type="submit">
+                <span class="htmx-indicator">Logging in…</span>
+                <span class="htmx-hide-when-request">Login</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="auth-aux">
+            <form method="post" action="/ui/guest" hx-post="/ui/guest" hx-swap="none">
+              <button class="secondary" type="submit">
+                <span class="htmx-indicator">Starting…</span>
+                <span class="htmx-hide-when-request">Continue as guest</span>
+              </button>
+            </form>
+            <div class="helper">Guest accounts expire after 7 days on this server.</div>
+          </div>
+
+          <div id="panel_register" class="auth-panel" role="tabpanel" aria-labelledby="tab_register" hidden>
+            <form class="auth-form" method="post" action="/ui/register" hx-post="/ui/register" hx-target="#auth_error" hx-swap="innerHTML">
+              <div class="field">
+                <label for="register_email">Email</label>
+                <input id="register_email" type="email" name="email" autocomplete="email" required />
+              </div>
+              <div class="field">
+                <label for="register_password">Password</label>
+                <div class="input-with-action">
+                  <input id="register_password" type="password" name="password" autocomplete="new-password" minlength="8" required />
+                  <button class="input-action" type="button" data-toggle-password="register_password" aria-label="Show password">Show</button>
+                </div>
+                <div class="helper">Use 8+ characters.</div>
+              </div>
+              <button class="primary" type="submit">
+                <span class="htmx-indicator">Creating…</span>
+                <span class="htmx-hide-when-request">Create account</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="trust">
+            <div class="muted"><small>We don’t sell data. No spam. You can delete your account.</small></div>
+            <div class="trust-links">
+              <a href="/privacy">Privacy</a>
+              <span class="muted">·</span>
+              <a href="/terms">Terms</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
+
+  <script>
+    (function () {
+      function setActiveTab(which) {
+        var tabLogin = document.getElementById('tab_login');
+        var tabRegister = document.getElementById('tab_register');
+        var panelLogin = document.getElementById('panel_login');
+        var panelRegister = document.getElementById('panel_register');
+        var authError = document.getElementById('auth_error');
+        if (!tabLogin || !tabRegister || !panelLogin || !panelRegister) return;
+
+        var isLogin = which === 'login';
+        tabLogin.classList.toggle('active', isLogin);
+        tabRegister.classList.toggle('active', !isLogin);
+        tabLogin.setAttribute('aria-selected', isLogin ? 'true' : 'false');
+        tabRegister.setAttribute('aria-selected', !isLogin ? 'true' : 'false');
+        panelLogin.hidden = !isLogin;
+        panelRegister.hidden = isLogin;
+        if (authError) authError.innerHTML = '';
+
+        var firstInput = (isLogin ? panelLogin : panelRegister).querySelector('input');
+        if (firstInput) firstInput.focus();
+      }
+
+      var tabLogin = document.getElementById('tab_login');
+      var tabRegister = document.getElementById('tab_register');
+      if (tabLogin) tabLogin.addEventListener('click', function () { setActiveTab('login'); });
+      if (tabRegister) tabRegister.addEventListener('click', function () { setActiveTab('register'); });
+
+      document.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.getAttribute) return;
+        var inputId = t.getAttribute('data-toggle-password');
+        if (!inputId) return;
+        var input = document.getElementById(inputId);
+        if (!input) return;
+        var isPw = input.getAttribute('type') === 'password';
+        input.setAttribute('type', isPw ? 'text' : 'password');
+        t.textContent = isPw ? 'Hide' : 'Show';
+        t.setAttribute('aria-label', isPw ? 'Hide password' : 'Show password');
+      });
+    })();
+  </script>
 {% endblock %}

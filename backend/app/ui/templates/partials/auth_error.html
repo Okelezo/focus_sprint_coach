@@ -1,1 +1,8 @@
-<div class="notice">{{ message }}</div>
+{% set msg = message %}
+{% if message == 'invalid_credentials' %}
+  {% set msg = 'That email/password didn\'t match. Try again.' %}
+{% elif message == 'email_already_registered' %}
+  {% set msg = 'That email is already registered. Try logging in instead.' %}
+{% endif %}
+
+<div class="notice" role="alert" aria-live="polite">{{ msg }}</div>

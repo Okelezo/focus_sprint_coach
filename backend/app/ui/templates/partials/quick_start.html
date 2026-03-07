@@ -1,0 +1,144 @@
+{% set p = request.url.path %}
+{% if user is defined and p.startswith('/app') %}
+  <div class="quick-start" id="quick_start" data-user-id="{{ user.id }}" hidden>
+    <div class="quick-start-head">
+      <div>
+        <div class="kicker">Quick start</div>
+        <h2 style="margin-top: 4px;">One calm loop to get started</h2>
+        <div class="helper">Complete these once. We’ll remember your progress on this device.</div>
+      </div>
+      <button class="button secondary" type="button" id="quick_start_dismiss">Dismiss</button>
+    </div>
+
+    <div class="quick-start-items" role="list">
+      <label class="qs-item" role="listitem">
+        <input type="checkbox" data-qs-item="task" />
+        <span>Add your first task</span>
+      </label>
+      <label class="qs-item" role="listitem">
+        <input type="checkbox" data-qs-item="microsteps" />
+        <span>Generate micro-steps</span>
+      </label>
+      <label class="qs-item" role="listitem">
+        <input type="checkbox" data-qs-item="sprint" />
+        <span>Complete a sprint</span>
+      </label>
+      <label class="qs-item" role="listitem">
+        <input type="checkbox" data-qs-item="reflection" />
+        <span>Add a reflection</span>
+      </label>
+    </div>
+
+    <div class="quick-start-cta">
+      <a class="button primary" href="/app">Go to Tasks</a>
+      <a class="button secondary" href="/app/sprint">Go to Sprint</a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('quick_start');
+      if (!root) return;
+      var userId = root.getAttribute('data-user-id');
+      if (!userId) return;
+
+      var key = 'fsc_qs_v1_' + userId;
+      var dismissedKey = 'fsc_qs_dismissed_v1_' + userId;
+
+      function load() {
+        try {
+          return JSON.parse(window.localStorage.getItem(key) || '{}');
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function save(state) {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(state || {}));
+        } catch (e) {}
+      }
+
+      function isDismissed() {
+        try {
+          return window.localStorage.getItem(dismissedKey) === '1';
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function setDismissed() {
+        try {
+          window.localStorage.setItem(dismissedKey, '1');
+        } catch (e) {}
+      }
+
+      function computeDefaultState(prev) {
+        var next = Object.assign({ task: false, microsteps: false, sprint: false, reflection: false }, prev || {});
+
+        // Heuristics based on current page:
+        var path = window.location && window.location.pathname ? window.location.pathname : '';
+        if (path === '/app') {
+          var tasks = document.querySelectorAll('[data-task-card], .task-card');
+          if (tasks && tasks.length > 0) next.task = true;
+        }
+        if (path.indexOf('/app/task/') === 0) {
+          next.task = true;
+          var microsteps = document.querySelectorAll('#microsteps li');
+          if (microsteps && microsteps.length > 0) next.microsteps = true;
+        }
+        if (path.indexOf('/app/sprint') === 0) {
+          next.task = next.task || false;
+        }
+
+        return next;
+      }
+
+      function render(state) {
+        var items = root.querySelectorAll('input[data-qs-item]');
+        for (var i = 0; i < items.length; i++) {
+          var k = items[i].getAttribute('data-qs-item');
+          items[i].checked = !!state[k];
+        }
+
+        var allDone = !!state.task && !!state.microsteps && !!state.sprint && !!state.reflection;
+        if (allDone) {
+          root.hidden = true;
+        } else {
+          root.hidden = false;
+        }
+      }
+
+      if (isDismissed()) return;
+
+      var state = computeDefaultState(load());
+      save(state);
+      render(state);
+
+      root.addEventListener('change', function (e) {
+        var t = e.target;
+        if (!t || !t.getAttribute) return;
+        var k = t.getAttribute('data-qs-item');
+        if (!k) return;
+        state[k] = !!t.checked;
+        save(state);
+        render(state);
+      });
+
+      var dismissBtn = document.getElementById('quick_start_dismiss');
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', function () {
+          setDismissed();
+          root.hidden = true;
+        });
+      }
+
+      document.body.addEventListener('htmx:afterSwap', function () {
+        var next = computeDefaultState(load());
+        state = next;
+        save(state);
+        render(state);
+      });
+    })();
+  </script>
+{% endif %}

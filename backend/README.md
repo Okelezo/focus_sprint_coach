@@ -163,6 +163,31 @@ Manual UI smoke:
   - Loading indicators use `.htmx-indicator` + `.htmx-hide-when-request` and are styled in `styles.css`.
   - Toasts can be triggered in-page via `window.fscToast('...')`.
 
+## UX checklist
+
+- **Landing page clarity (5 seconds test)**
+  - `GET /` renders `app/ui/templates/index.html`.
+  - Should show:
+    - Headline + 3 bullets
+    - “How it works” steps
+    - Auth card with Login/Register tabs
+
+- **Auth form usability**
+  - Explicit labels (not placeholder-only)
+  - Password show/hide toggle
+  - HTMX error messaging renders into `#auth_error` via `app/ui/templates/partials/auth_error.html`
+  - Loading state uses `.htmx-indicator` and disables interactions via `.htmx-request`
+
+- **Activation loop (post-login)**
+  - Quick Start checklist appears on logged-in pages (stored in localStorage):
+    - `app/ui/templates/partials/quick_start.html`
+  - Happy path:
+    - Create task → generate microsteps → start sprint → finish + reflection
+
+- **Mobile + keyboard**
+  - Mobile bottom nav present on authenticated pages: `app/ui/templates/partials/bottom_nav.html`
+  - Visible focus ring on interactive elements
+
 ## Observability
 
 ### Analytics

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import Cookie, Depends, HTTPException, status
@@ -33,5 +34,13 @@ async def get_current_user_from_cookie(
     user = result.scalar_one_or_none()
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="not_authenticated")
+
+    if user.is_guest and user.guest_expires_at is not None:
+        now = datetime.now(timezone.utc)
+        expires_at = user.guest_expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if now >= expires_at:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="guest_expired")
 
     return user

@@ -14,6 +14,9 @@
       {% endif %}
 
       <main class="container page" id="main" tabindex="-1">
+        {% if user is defined %}
+          {% include "partials/quick_start.html" %}
+        {% endif %}
         {% block body %}{% endblock %}
       </main>
 

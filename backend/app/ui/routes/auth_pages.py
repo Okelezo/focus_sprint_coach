@@ -1,10 +1,13 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import create_access_token, hash_password
 from app.core.settings import get_settings
+from app.db.models.user import User
 from app.db.session import get_db
 from app.observability.analytics import track
 from app.services.auth import AuthError, login_user, register_user
@@ -17,6 +20,54 @@ router = APIRouter(tags=["ui"])
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request) -> HTMLResponse:
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@router.get("/privacy", response_class=HTMLResponse)
+async def privacy(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse("privacy.html", {"request": request})
+
+
+@router.get("/terms", response_class=HTMLResponse)
+async def terms(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse("terms.html", {"request": request})
+
+
+@router.post("/ui/guest")
+async def ui_guest(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    email = f"guest-{uuid4()}@guest.local"
+    password_hash = hash_password(str(uuid4()))
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+
+    user = User(email=email, password_hash=password_hash, is_guest=True, guest_expires_at=expires_at)
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    await track(user.id, "guest_created", {"expires_at": expires_at.isoformat()}, db=db)
+    await track(user.id, "user_logged_in", {"method": "guest"}, db=db)
+
+    settings = get_settings()
+    token = create_access_token(subject=str(user.id))
+
+    if request.headers.get("HX-Request"):
+        resp = JSONResponse(content="", status_code=200)
+        resp.headers["HX-Redirect"] = "/app"
+    else:
+        resp = RedirectResponse(url="/app", status_code=303)
+
+    resp.set_cookie(
+        UI_AUTH_COOKIE_NAME,
+        token,
+        httponly=True,
+        samesite=settings.ui_cookie_samesite,
+        secure=settings.ui_cookie_secure_effective(),
+        max_age=int(timedelta(minutes=settings.access_token_expire_minutes).total_seconds()),
+        path="/",
+    )
+    return resp
 
 
 @router.post("/ui/register")
